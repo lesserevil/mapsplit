@@ -56,8 +56,8 @@ si_height = page_height - 2 * (margin + overlap)
 image_width = map_width * pixel_per_inch
 image_height = map_height * pixel_per_inch
 
-x_pages = int(ceil(map_width/(page_width - overlap)))
-y_pages = int(ceil(map_height/(page_height - overlap)))
+x_pages = int(ceil(1+ (map_width-page_width)/(page_width - overlap - margin)))
+y_pages = int(ceil(1 + (map_height-page_height)/(page_height - overlap - margin)))
 
 image = Image.open(image_name)
 
