@@ -45,6 +45,8 @@ overlap = 0.5
 hole_size = 0.25
 hole_offset = overlap/2-hole_size/2
 
+text_size = 16
+
 # 'split image' dimension is dimension = 2 x ( margin + overlap )
 si_width = page_width - 2 * (margin + overlap)
 si_height = page_height - 2 * (margin + overlap)
@@ -96,6 +98,10 @@ for y in range(y_pages):
       pdf.ellipse(x=right_dot, y=top_dot, w=hole_size, h=hole_size, style='DF')
     if x != x_pages-1 or y != y_pages-1:
       pdf.ellipse(x=right_dot, y=bottom_dot, w=hole_size, h=hole_size, style='DF')
+
+    # place descriptive text in the corner of the page
+    pdf.set_font(family='Arial', style='B', size=text_size)
+    pdf.text(x=left_dot+3/2*hole_size, y=bottom_dot+hole_size, txt='%dx%d' % (x, y))
 
 # save PDf
 pdf.output("%s.pdf"%output_name)
