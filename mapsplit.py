@@ -16,6 +16,7 @@ parser.add_argument('--page-width', dest='page_width', type=float, default=8.5, 
 parser.add_argument('--page-height', dest='page_height', type=float, default=11, help="Height of outout pages (inches)")
 parser.add_argument('--output', dest='output_name', default='output', help="Name of output file")
 parser.add_argument('--temp-dir', dest='temp_dir', default=environ['TMP'], help='Location of temp files')
+parser.add_argument('--keep-temp', dest='keep_temp', action='store_true', default=False, help='Keep temporary files')
 
 args=parser.parse_args()
 
@@ -36,6 +37,7 @@ if args.page_size:
     page_width = 11
     page_height = 17
 temp_dir = args.temp_dir
+keep_temp = args.keep_temp
 
 pixel_per_inch = 72
 
@@ -61,8 +63,6 @@ image = Image.open(image_name)
 
 image = image.resize((int(image_width), int(image_height)), Image.ANTIALIAS)
 
-# image.save("output.png")
-
 pdf = FPDF('P','in', (page_width, page_height))
 
 temp_files = []
@@ -80,9 +80,11 @@ for y in range(y_pages):
     # save new image cut from image
     cut_image = image.crop((x*(cut_width-overlap)*pixel_per_inch,y*(cut_height-overlap)*pixel_per_inch,cut_right,cut_bottom))
     cut_image.save(outfile)
+
     # place image in PDF
     pdf.add_page()
     pdf.image(outfile,x=margin, y=margin, w=min(page_width-2*margin, cut_image.size[0]/pixel_per_inch), h=min(page_height-2*margin, cut_image.size[1]/pixel_per_inch))
+
     # place holes on PDF
     pdf.set_draw_color(r=0)
     pdf.set_fill_color(r=255)
@@ -107,11 +109,12 @@ for y in range(y_pages):
 pdf.output("%s.pdf"%output_name)
 
 # remove temp files
-while temp_files:
-  try:
-    unlink(temp_files.pop())
-  except:
-    pass
+if not keep_temp:
+  while temp_files:
+    try:
+      unlink(temp_files.pop())
+    except:
+      pass
 
 print("Map will require %d pins." % int((x_pages+1)*(y_pages+1)-4))
 
