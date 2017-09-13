@@ -5,6 +5,7 @@ from math import ceil
 from fpdf import FPDF
 from os import unlink, environ
 import argparse
+import os.path
 
 parser = argparse.ArgumentParser(description="Split map to print on multiple pages with overlap", epilog="The PAGE_SIZE parameter will override the PAGE_WIDTH and PAGE_HEIGHT parameters")
 
@@ -69,7 +70,7 @@ temp_files = []
 
 for y in range(y_pages):
   for x in range(x_pages):
-    outfile = "%s/_%s_%dx%d.png" % (temp_dir,output_name,x,y)
+    outfile = "%s/_%s_%dx%d.png" % (temp_dir,os.path.basename(output_name),x,y)
     temp_files.append(outfile)
 
     cut_width = page_width - 2*margin
