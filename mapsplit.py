@@ -6,12 +6,13 @@ from fpdf import FPDF
 from os import unlink, environ
 import argparse
 import os.path
+import re
 
 parser = argparse.ArgumentParser(description="Split map to print on multiple pages with overlap", epilog="The PAGE_SIZE parameter will override the PAGE_WIDTH and PAGE_HEIGHT parameters")
 
 parser.add_argument('--file', dest="image_name", required=True, help="Input filename")
-parser.add_argument('--file-width', dest="map_width", type=float, required=True, help="Width of input file (inches)")
-parser.add_argument('--file-height', dest="map_height", type=float, required=True, help="Height of input file (inches)")
+parser.add_argument('--file-width', dest="map_width", type=float, default=24, help="Width of input file (inches)")
+parser.add_argument('--file-height', dest="map_height", type=float, default=30, help="Height of input file (inches)")
 parser.add_argument('--page-size', dest='page_size', help="Page size (letter, legal, ledger)")
 parser.add_argument('--page-width', dest='page_width', type=float, default=8.5, help="Width of output pages (inches)")
 parser.add_argument('--page-height', dest='page_height', type=float, default=11, help="Height of outout pages (inches)")
@@ -39,6 +40,16 @@ if args.page_size:
     page_height = 17
 temp_dir = args.temp_dir
 keep_temp = args.keep_temp
+
+image_base = os.path.basename(image_name)
+print(image_base)
+match = re.search('^(.*)-(\d+)x(\d+)\..*$', image_base)
+print(match)
+if match:
+  map_width = float(match.group(2))
+  map_height = float(match.group(3))
+  output_name = os.path.dirname(image_name) + os.path.sep + match.group(1) + ".pdf"
+  print(output_name)
 
 pixel_per_inch = 72
 
